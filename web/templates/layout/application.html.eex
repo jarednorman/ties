@@ -27,5 +27,14 @@
       </div>
 
     </div> <!-- /container -->
+    <script src="/js/phoenix.js"></script>
+    <script>
+      var socket = new Phoenix.Socket("/ws");
+      socket.join("games", "games", null, function(channel) {
+        channel.on("games", function(message) {
+          console.log(message);
+        });
+      });
+    </script>
   </body>
 </html>
