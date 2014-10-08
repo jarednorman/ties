@@ -1,6 +1,6 @@
-defmodule Ties.Game do
+defmodule Ties.GameState do
   def new do
-    Enum.map (0..8), fn(_) -> nil end
+    [nil, nil, nil, nil, nil, nil, nil, nil, nil]
   end
 
   def x(game, tile) do
