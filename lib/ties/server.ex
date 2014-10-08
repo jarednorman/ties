@@ -23,18 +23,21 @@ defmodule Ties.Server do
   end
 
   defp serve(socket) do
-    socket
-    |> read_line()
-    |> write_line(socket)
+    case read_line(socket) do
+      {:ok, line} ->
+        write_line(line, socket)
+        serve(socket)
+      {:error, :closed} ->
+        nil
+    end
 
-    serve(socket)
   end
 
   defp read_line(socket) do
     case :gen_tcp.recv(socket, 0) do
-      {:ok, data} -> data
-      # handle closed socket
-    data
+      success = {:ok, data} -> success
+      error = {:error, _} -> error
+    end
   end
 
   defp write_line(line, socket) do

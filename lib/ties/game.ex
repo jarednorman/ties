@@ -15,7 +15,7 @@ defmodule Ties.Game do
               _,_,_,
               _,_,_]), do: p
   def winner([_,_,_,
-              p,p,p
+              p,p,p,
               _,_,_]), do: p
   def winner([_,_,_,
               _,_,_,
