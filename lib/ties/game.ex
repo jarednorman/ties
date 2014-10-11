@@ -27,6 +27,7 @@ defmodule Ties.Game do
     |> tell("Where would you like to play? ")
     |> get_turn
     |> play_turn(game, current_player)
+    |> IO.inspect
     |> do_turn(other_player, current_player)
   end
 
@@ -53,9 +54,9 @@ defmodule Ties.Game do
     |> String.to_integer
   end
 
-  defp play_turn(tile, game, player) do
-    IO.puts "I'm supposed to play #{tile} for #{player}"
-    game
+  defp play_turn(tile, game = %Game{game_state: game_state}, player) do
+    game_state = GameState.update_tile(game_state, tile, player)
+    %{game | game_state: game_state}
   end
 
   def format_board(%Game{game_state: game_state}) do
@@ -73,8 +74,8 @@ defmodule Ties.Game do
   def render_row(row) do
     row
     |> Enum.map(fn
-      ({index, nil}) -> index
-      ({_, player}) -> player
+      ({nil, index}) -> index
+      ({player, _}) -> player
     end)
     |> Enum.join("|")
   end

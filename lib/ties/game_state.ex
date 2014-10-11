@@ -39,7 +39,7 @@ defmodule Ties.GameState do
 
   def finished?(game), do: winner(game) || Enum.all? game
 
-  defp update_tile(game, tile, player) do
+  def update_tile(game, tile, player) do
     List.update_at game, tile, fn(_) -> player end
   end
 end
