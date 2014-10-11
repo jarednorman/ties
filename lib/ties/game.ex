@@ -26,7 +26,8 @@ defmodule Ties.Game do
     |> tell(format_board(game))
     |> tell("Where would you like to play? ")
     |> get_turn
-    do_turn(game, other_player, current_player)
+    |> play_turn(game, current_player)
+    |> do_turn(other_player, current_player)
   end
 
   def notify_players(game = %Game{x: x_player, o: o_player}) do
@@ -52,5 +53,29 @@ defmodule Ties.Game do
     |> String.to_integer
   end
 
-  defp format_board(), do: "yolo\n"
+  defp play_turn(tile, game, player) do
+    IO.puts "I'm supposed to play #{tile} for #{player}"
+    game
+  end
+
+  def format_board(%Game{game_state: game_state}) do
+    "\n" <> render_board(game_state) <> "\n\n"
+  end
+
+  def render_board(game_state) do
+    game_state
+    |> Enum.with_index
+    |> Enum.chunk(3)
+    |> Enum.map(&render_row(&1))
+    |> Enum.join("\n-----\n")
+  end
+
+  def render_row(row) do
+    row
+    |> Enum.map(fn
+      ({index, nil}) -> index
+      ({_, player}) -> player
+    end)
+    |> Enum.join("|")
+  end
 end
