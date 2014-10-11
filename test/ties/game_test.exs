@@ -7,6 +7,10 @@ defmodule TiesGameTest do
     %{new_game | game_state: [nil, :x, nil, :o, :o, :x, nil, nil, nil]}
   end
 
+  def tie_game do
+    %{new_game | game_state: [:x, :o, :x, :o, :x, :x, :o, :x, :o]}
+  end
+
   test "it can format boards" do
     assert Game.format_board(new_game)
     == "\n0|1|2\n-----\n3|4|5\n-----\n6|7|8\n\n"

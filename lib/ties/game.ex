@@ -21,14 +21,56 @@ defmodule Ties.Game do
   end
 
   def do_turn(game, current_player, other_player) do
-    game[current_player]
-    |> tell("It is your turn.\n")
-    |> tell(format_board(game))
-    |> tell("Where would you like to play? ")
-    |> get_turn
-    |> play_turn(game, current_player)
-    |> IO.inspect
-    |> do_turn(other_player, current_player)
+    if finished?(game) do
+      clean_up(game)
+    else
+      game[current_player]
+      |> tell("It is your turn.\n")
+      |> tell(format_board(game))
+      |> tell("Where would you like to play? ")
+      |> get_turn
+      |> play_turn(game, current_player)
+      |> do_turn(other_player, current_player)
+    end
+  end
+
+  defp finished?(%Game{game_state: game_state}) do
+    GameState.finished? game_state
+  end
+
+  defp clean_up(game = %Game{
+    game_state: game_state,
+    x: x_player,
+    o: o_player
+  }) do
+    case GameState.winner(game_state) do
+      nil -> handle_tie(game)
+      :x ->
+        clean_up_winner x_player
+        clean_up_loser o_player
+      :o ->
+        clean_up_winner o_player
+        clean_up_loser x_player
+    end
+    Enum.each([x_player, o_player], &(:gen_tcp.close(&1)))
+  end
+
+  defp clean_up_winner(winner) do
+    winner
+    |> tell("You won! Congrats!\n")
+    |> :gen_tcp.close
+  end
+
+  defp clean_up_loser(loser) do
+    loser
+    |> tell("You lost! Better luck next time!\n")
+    |> :gen_tcp.close
+  end
+
+  defp handle_tie(%Game{x: x_player, o: o_player}) do
+    [x_player, o_player] |> Enum.each fn
+      (player) -> tell player, "The game ended in a tie. Go figure.\n"
+    end
   end
 
   def notify_players(game = %Game{x: x_player, o: o_player}) do
