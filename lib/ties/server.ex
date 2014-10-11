@@ -12,15 +12,22 @@ defmodule Ties.Server do
   end
 
   def accept(port) do
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :line, active: false])
-    loop_acceptor(socket)
+    case :gen_tcp.listen(port, [:binary, packet: :line, active: false]) do
+      {:ok, socket} ->
+        IO.puts "bound to port #{port}"
+        loop_acceptor(socket)
+      {:error, :eaddrinuse} ->
+        IO.puts "eaddrinuse, waiting then trying again"
+        :timer.sleep 2000
+        accept(port)
+    end
   end
 
   defp loop_acceptor(socket) do
     {:ok, client1} = :gen_tcp.accept(socket)
     {:ok, client2} = :gen_tcp.accept(socket)
     Task.Supervisor.start_child(Ties.Server.TaskSupervisor, fn ->
-      Ties.GameManager.start_game(client1, client2)
+      Ties.GameServer.start_game(client1, client2)
     end)
     loop_acceptor(socket)
   end
