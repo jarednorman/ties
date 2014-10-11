@@ -21,11 +21,11 @@ defmodule Ties.Game do
   end
 
   def do_turn(game, current_player, other_player) do
-    player = game[current_player]
-    tell player, "It is your turn.\n"
-    tell player, format_board(game)
-    tell player, "Where would you like to play? "
-    turn = get_turn(player)
+    game[current_player]
+    |> tell("It is your turn.\n")
+    |> tell(format_board(game))
+    |> tell("Where would you like to play? ")
+    |> get_turn
     do_turn(game, other_player, current_player)
   end
 
@@ -52,5 +52,5 @@ defmodule Ties.Game do
     |> String.to_integer
   end
 
-  defp format_board(game), do: "yolo\n"
+  defp format_board(), do: "yolo\n"
 end
